@@ -61,7 +61,7 @@ Note the Elastic IP (e.g., 54.123.45.67)
 # From Windows PowerShell:
 cd C:\Users\YourName\.ssh
 ssh -i your-key.pem ubuntu@<elastic-ip>
-
+``` 
 # First connection warning:
 # Type: yes
 
