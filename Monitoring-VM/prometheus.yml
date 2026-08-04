@@ -1,0 +1,20 @@
+# Global Prometheus configuration
+global:
+  scrape_interval: 15s      # How often to scrape metrics (15 seconds)
+  evaluation_interval: 15s  # How often to evaluate rules
+
+# Scrape Prometheus's own metrics
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape AWS EC2 Node Exporter (UPDATE WITH YOUR AWS IP!)
+  - job_name: 'aws-ec2'
+    static_configs:
+      - targets: ['18.188.209.140:9100']  # ← AWS EC2 Public IP
+
+  # Scrape local monitoring server Node Exporter (will add later)
+  - job_name: 'monitoring-server'
+    static_configs:
+      - targets: ['localhost:9100']
