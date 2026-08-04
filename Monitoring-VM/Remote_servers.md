@@ -205,6 +205,61 @@ curl http://localhost:9100/metrics | head -n 10
 curl http://<elastic-ip>:5000/health
 curl http://<elastic-ip>:9100/metrics | Select-Object -First 10
 
+🔒 Security Group Configuration 
+This document explains the firewall rules protecting your AWS EC2 instance.
 
+Rule 1: SSH (Port 22)
+Purpose: Remote administration of EC2 instance
 
+Why restricted to My IP?
+• SSH provides full system access
+• If exposed to internet (0.0.0.0/0), vulnerable to brute force
+• Restricting to your IP reduces attack surface by 99.9%
 
+Best practices:
+✅ Use SSH key authentication (no passwords)
+✅ Restrict source to your IP only
+✅ Consider using AWS Systems Manager Session Manager (no SSH needed)
+❌ Never allow 0.0.0.0/0 on port 22
+
+Rule 2: Flask App (Port 5000)
+Purpose: Access to the web application
+
+Why restricted to My IP?
+• Development/testing only (not production)
+• Flask development server not hardened for public traffic
+• Prevents unauthorized access during development
+
+For production:
+• Use AWS Application Load Balancer
+• Deploy behind CloudFront (CDN)
+• Implement WAF (Web Application Firewall)
+• Use HTTPS (port 443) instead of HTTP
+
+Rule 3: Node Exporter (Port 9100)
+Purpose: Prometheus metrics scraping
+
+Why restricted to My IP?
+• Metrics can reveal system information (CPU, memory, processes)
+• Not authenticated by default
+• Should only be accessible to monitoring system
+
+Better approach (implemented):
+• Use SSH tunnel for metrics collection
+• Remove this rule entirely
+• Prometheus scrapes via tunnel (localhost:9101)
+• No public exposure of metrics endpoint
+
+🔐 Security Best Practices
+✅ Do:
+Restrict all ports to specific IPs (not 0.0.0.0/0)
+Use descriptive rule names
+Review rules monthly
+Remove unused rules
+Use SSH keys, not passwords
+Consider AWS Systems Manager for management
+❌ Don't:
+Allow 0.0.0.0/0 on sensitive ports (22, 3306, 5432)
+Share security groups across unrelated instances
+Forget to update rules when your IP changes
+Expose development services to internet
